@@ -1,0 +1,248 @@
+<html>
+
+<body style="font-family: Helvetica">
+    <h1>Decimal/Hexadecimal/Binary Converter</h1>
+    <div style="margin-bottom: 25px">
+        <select id="converting_from">
+            <option value="decimal">Decimal</option>
+            <option value="hexadecimal">Hexadecimal</option>
+            <option value="binary">Binary</option>
+        </select>
+        <b>convert into</b>
+        <select id="converting_to">
+            <option value="decimal">Decimal</option>
+            <option value="hexadecimal">Hexadecimal</option>
+            <option value="binary">Binary</option>
+        </select>
+    </div>
+    <div>
+        <input id="number" style="width: 400px" type="text" />
+        <button onclick="convert()">
+            Convert
+        </button>
+    </div>
+    <h1>Answer:<span id="answer"></span></h1>
+</body>
+<script>
+    function convert() {
+        updateAnswerBox("");
+        //converting from
+        // var from_select = document.getElementById("converting_from");
+        // var from_type = from_select.options[from_select.selectedIndex].value;
+        var from_type = getTypeFromDropdown("converting_from");
+        //converting into 
+        // var to_select = document.getElementById("converting_to");
+        // var to_type = to_select.options[to_select.selectedIndex].value;
+        var to_type = getTypeFromDropdown("converting_to");
+        //value
+        var from_number = document.getElementById("number").value;
+        // validation
+        if (from_type == to_type) {
+            alert("Convert a different base");
+            return;
+        }
+
+        var binaryRegex = /^[0-1]*$/;
+        var hexadecimalRegex = /^[a-f0-9]*$/;
+        var decimalRegex = /^[0-9]*$/;
+        var pattern;
+        switch (from_type) {
+            case "binary":
+                pattern = binaryRegex;
+                break;
+            case "hexadecimal":
+                pattern = hexadecimalRegex;
+                break;
+            case "decimal":
+                pattern = decimalRegex;
+                break;
+            default:
+        }
+        if (!(pattern.test(from_number))) {
+            alert("This isn't a valid number");
+            return;
+        }
+        if (from_type == "decimal" && from_number > Number.MAX_SAFE_INTEGER) {
+            alert("Number is to high");
+            return;
+        }
+        var to_number;
+        console.log("About to do Conversion");
+        if (from_type == "decimal" && to_type == "binary") {
+            to_number = decimalToBinary(from_number);
+            console.log(to_number);
+        }
+        if (from_type == "decimal" && to_type == "hexadecimal") {
+            to_number = decimalToHexadecimal(from_number);
+            console.log(to_number);
+        }
+        if (from_type == "hexadecimal" && to_type == "decimal") {
+            to_number = hexadecimalToDecimal(from_number);
+            console.log(to_number);
+        }
+        if (from_type == "hexadecimal" && to_type == "binary") {
+            to_number = hexadecimalToBinary(from_number);
+            console.log(to_number);
+        }
+        if (from_type == "binary" && to_type == "decimal") {
+            to_number = binaryToDecimal(from_number);
+            console.log(to_number);
+        }
+        if (from_type == "binary" && to_type == "hexadecimal") {
+            to_number = binaryToHexadecimal(from_number);
+            console.log(to_number);
+        }
+        console.log("Made it here");
+        updateAnswerBox(to_number);
+
+        //process
+        //q=(x%2e)\e do this process until e surpasses the given number(x)
+        // var s = "";
+
+        // for (var i = 1; i <= number; i=2*i) {
+        //     // console.log(i);
+        //     // console.log(number);
+        //     // console.log(Math.trunc(number%(2*i)/i));
+        //     s = Math.trunc(number%(2*i)/i) + s;
+        // }
+        // console.log(s);
+        // document.getElementById("answer").innerHTML = s;
+    }
+    function decimalToBinary(decimal) {
+        var binary = "";
+        for (var i = 1; i <= decimal; i = 2 * i) {
+            binary = Math.trunc(decimal % (2 * i) / i) + binary;
+        }
+        return binary;
+    }
+    function decimalToHexadecimal(decimal) {
+        var hexadecimal = "";
+        for (var i = 1; i <= decimal; i = 16 * i) {
+            var x = Math.trunc(decimal % (16 * i) / i);
+            console.log(x);
+            hexadecimal = decimalDigitToHexadecimalDigit(x) + hexadecimal;
+        }
+        return hexadecimal;
+    }
+    function hexadecimalToDecimal(hexadecimal) {
+        var decimal = 0;
+        for (var i = 1; i - 1 < hexadecimal.length; i++) {
+            var character = hexadecimal.substr(hexadecimal.length - i, 1);
+            var decimalDigit = hexadecimalDigitToDecimalDigit(character);
+            var y = Math.pow(16, i - 1);
+            decimal = (decimalDigit * y + decimal);
+            console.log(i, character, y, decimal);
+        }
+        return decimal;
+    }
+    function hexadecimalToBinary(hexadecimal) {
+        var binary = "";
+        for (var i = 1; i - 1 < hexadecimal.length; i++) {
+            var character = hexadecimal.substr(hexadecimal.length - i, 1);
+            var binaryDigit = hexadecimalDigitToBinaryDigit(character);
+            binary = (binaryDigit + binary);
+        }
+        return binary;
+    }
+    function binaryToDecimal(binary) {
+        var decimal = 0;
+        for (var i = 1; i - 1 < binary.length; i++) {
+            var character = binary.substr(binary.length - i, 1);
+            var y = Math.pow(2, i - 1);
+            decimal = (character * y + decimal);
+        }
+        return decimal;
+    }
+    function binaryToHexadecimal(binary) {
+        var hexadecimal = "";
+        if (binary.length % 4 > 0) {
+            binary = ('0000'+binary).substring(binary.length % 4);
+        }
+        for (var i = 4; i <= binary.length; i += 4) {
+            var character = binary.substr(binary.length - i, 4);
+            var hexadecimalDigit = binaryDigitToHexadecimalDigit(character);
+            hexadecimal = (hexadecimalDigit + hexadecimal);
+            console.log(i, character, hexadecimalDigit, hexadecimal);
+        }
+        return hexadecimal;
+    }
+    function updateAnswerBox(answer) {
+        document.getElementById("answer").innerHTML = answer;
+    }
+
+    function getTypeFromDropdown(converting) {
+        var select = document.getElementById(converting);
+        var type = select.options[select.selectedIndex].value;
+        return type;
+    }
+    function decimalDigitToHexadecimalDigit(decimalDigit) {
+        if (decimalDigit <= 9) {
+            return decimalDigit;
+        }
+        switch (decimalDigit) {
+            case 10: return "a";
+            case 11: return "b";
+            case 12: return "c";
+            case 13: return "d";
+            case 14: return "e";
+            case 15: return "f";
+        }
+
+    }
+    function hexadecimalDigitToDecimalDigit(hexadecimalDigit) {
+        if (hexadecimalDigit <= 9) {
+            return hexadecimalDigit;
+        }
+        switch (hexadecimalDigit) {
+            case "a": return 10;
+            case "b": return 11;
+            case "c": return 12;
+            case "d": return 13;
+            case "e": return 14;
+            case "f": return 15;
+        }
+    }
+    function hexadecimalDigitToBinaryDigit(hexadecimalDigit) {
+        switch (hexadecimalDigit) {
+            case "0": return "0000";
+            case "1": return "0001";
+            case "2": return "0010";
+            case "3": return "0011";
+            case "4": return "0100";
+            case "5": return "0101";
+            case "6": return "0110";
+            case "7": return "0111";
+            case "8": return "1000";
+            case "9": return "1001";
+            case "a": return "1010";
+            case "b": return "1011";
+            case "c": return "1100";
+            case "d": return "1101";
+            case "e": return "1110";
+            case "f": return "1111";
+        }
+    }
+    function binaryDigitToHexadecimalDigit(binaryDigit) {
+        switch (binaryDigit) {
+            case "0000": return "0";
+            case "0001": return "1";
+            case "0010": return "2";
+            case "0011": return "3";
+            case "0100": return "4";
+            case "0101": return "5";
+            case "0110": return "6";
+            case "0111": return "7";
+            case "1000": return "8";
+            case "1001": return "9";
+            case "1010": return "a";
+            case "1011": return "b";
+            case "1100": return "c";
+            case "1101": return "d";
+            case "1110": return "e";
+            case "1111": return "f";
+        }
+    }
+
+</script>
+
+</html>
