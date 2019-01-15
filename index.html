@@ -26,35 +26,23 @@
 <script>
     function convert() {
         updateAnswerBox("");
-        //converting from
-        // var from_select = document.getElementById("converting_from");
-        // var from_type = from_select.options[from_select.selectedIndex].value;
         var from_type = getTypeFromDropdown("converting_from");
-        //converting into 
-        // var to_select = document.getElementById("converting_to");
-        // var to_type = to_select.options[to_select.selectedIndex].value;
         var to_type = getTypeFromDropdown("converting_to");
-        //value
         var from_number = document.getElementById("number").value;
-        // validation
         if (from_type == to_type) {
             alert("Convert a different base");
             return;
         }
-
-        var binaryRegex = /^[0-1]*$/;
-        var hexadecimalRegex = /^[a-f0-9]*$/;
-        var decimalRegex = /^[0-9]*$/;
         var pattern;
         switch (from_type) {
             case "binary":
-                pattern = binaryRegex;
+                pattern =  /^[0-1]*$/;
                 break;
             case "hexadecimal":
-                pattern = hexadecimalRegex;
+                pattern =  /^[a-f0-9]*$/;
                 break;
             case "decimal":
-                pattern = decimalRegex;
+                pattern = /^[0-9]*$/;
                 break;
             default:
         }
@@ -67,46 +55,25 @@
             return;
         }
         var to_number;
-        console.log("About to do Conversion");
         if (from_type == "decimal" && to_type == "binary") {
             to_number = decimalToBinary(from_number);
-            console.log(to_number);
         }
         if (from_type == "decimal" && to_type == "hexadecimal") {
             to_number = decimalToHexadecimal(from_number);
-            console.log(to_number);
         }
         if (from_type == "hexadecimal" && to_type == "decimal") {
             to_number = hexadecimalToDecimal(from_number);
-            console.log(to_number);
         }
         if (from_type == "hexadecimal" && to_type == "binary") {
             to_number = hexadecimalToBinary(from_number);
-            console.log(to_number);
         }
         if (from_type == "binary" && to_type == "decimal") {
             to_number = binaryToDecimal(from_number);
-            console.log(to_number);
         }
         if (from_type == "binary" && to_type == "hexadecimal") {
             to_number = binaryToHexadecimal(from_number);
-            console.log(to_number);
         }
-        console.log("Made it here");
         updateAnswerBox(to_number);
-
-        //process
-        //q=(x%2e)\e do this process until e surpasses the given number(x)
-        // var s = "";
-
-        // for (var i = 1; i <= number; i=2*i) {
-        //     // console.log(i);
-        //     // console.log(number);
-        //     // console.log(Math.trunc(number%(2*i)/i));
-        //     s = Math.trunc(number%(2*i)/i) + s;
-        // }
-        // console.log(s);
-        // document.getElementById("answer").innerHTML = s;
     }
     function decimalToBinary(decimal) {
         var binary = "";
@@ -119,7 +86,6 @@
         var hexadecimal = "";
         for (var i = 1; i <= decimal; i = 16 * i) {
             var x = Math.trunc(decimal % (16 * i) / i);
-            console.log(x);
             hexadecimal = decimalDigitToHexadecimalDigit(x) + hexadecimal;
         }
         return hexadecimal;
@@ -131,7 +97,6 @@
             var decimalDigit = hexadecimalDigitToDecimalDigit(character);
             var y = Math.pow(16, i - 1);
             decimal = (decimalDigit * y + decimal);
-            console.log(i, character, y, decimal);
         }
         return decimal;
     }
@@ -162,7 +127,6 @@
             var character = binary.substr(binary.length - i, 4);
             var hexadecimalDigit = binaryDigitToHexadecimalDigit(character);
             hexadecimal = (hexadecimalDigit + hexadecimal);
-            console.log(i, character, hexadecimalDigit, hexadecimal);
         }
         return hexadecimal;
     }
@@ -242,7 +206,6 @@
             case "1111": return "f";
         }
     }
-
 </script>
 
 </html>
